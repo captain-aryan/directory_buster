@@ -3,6 +3,9 @@ import queue
 import threading 
 import sys
 import os
+from colorama import Fore, Style, init 
+
+init(autoreset=True)
 
 TIMEOUT = 5
 VALID_CODES = [200, 301, 302, 403]
@@ -23,20 +26,20 @@ except:
 
 wordlist_path = sys.argv[4] if len(sys.argv) > 4 else DEFAULT_WORDLIST
 
-print(f"\n[+] Target        : {host}")
-print(f"[+] Threads       : {threads}")
-print(f"[+] Extension     : {ext if ext else 'None'}")
-print(f"[+] Wordlist      : {wordlist_path}")
-print("[+] Scanning for directories...\n")
+print(f"\n{Fore.CYAN}[+] Target        : {host}")
+print(f"{Fore.CYAN}[+] Threads       : {threads}")
+print(f"{Fore.CYAN}[+] Extension     : {ext if ext else 'None'}")
+print(f"{Fore.CYAN}[+] Wordlist      : {wordlist_path}")
+print(f"[{Fore.GREEN}+{Style.RESET_ALL}] Scanning for directories...\n")
 
 if not os.path.isfile(wordlist_path):
-    print(f"[-] Wordlist not found: {wordlist_path}")
+    print(f"[{Fore.RED}+{Style.RESET_ALL}] Wordlist not found: {wordlist_path}")
     sys.exit(1)
 
 try:
     requests.get(host, timeout=TIMEOUT)
 except Exception as e:
-    print(f"[-] Target unreachable: {e}")
+    print(f"[{Fore.RED}+{Style.RESET_ALL}] Target unreachable: {e}")
     sys.exit(0)
 
 q = queue.Queue()
@@ -53,8 +56,14 @@ def dirbuster(q):
                 verify=False
             )
 
-            if response.status_code in VALID_CODES:
-                print(f"[{response.status_code}] {url}")
+            if response.status_code == 200:
+                print(f"[{Fore.GREEN}200{Style.RESET_ALL}] {url}")
+
+            elif response.status_code in (301, 302):
+                print(f"[{Fore.BLUE}{response.status_code}{Style.RESET_ALL}] {url}")
+
+            elif response.status_code == 403:
+                print(f"[{Fore.YELLOW}403{Style.RESET_ALL}] {url}")
 
         except requests.RequestException:
             pass
@@ -74,9 +83,9 @@ with open(wordlist_path, "r", errors="ignore") as wordlist:
         q.put(url)
 
 for i in range(threads):
-    t = threading.Thread(target = dirbuster, args=(i, q))
+    t = threading.Thread(target=dirbuster, args=(q,))
     t.daemon = True
     t.start()
 
 q.join()
-print("\n[+] Scan completed.")
+print(f"\n[{Fore.GREEN}+{Style.RESET_ALL}] Scan completed.")
