@@ -41,7 +41,7 @@ except Exception as e:
 
 q = queue.Queue()
 
-def dirbuster(thread_no, q):
+def dirbuster(q):
     session = requests.Session()
     while True:
         url = q.get()
