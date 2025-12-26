@@ -49,7 +49,7 @@ def dirbuster(thread_no, q):
             response = session.get(
                 url,
                 timeout=TIMEOUT,
-                allow_redirects=False,
+                allow_redirects=True,
                 verify=False
             )
 
