@@ -29,17 +29,18 @@ wordlist_path = sys.argv[4] if len(sys.argv) > 4 else DEFAULT_WORDLIST
 print(f"\n{Fore.CYAN}[+] Target        : {host}")
 print(f"{Fore.CYAN}[+] Threads       : {threads}")
 print(f"{Fore.CYAN}[+] Extension     : {ext if ext else 'None'}")
-print(f"{Fore.CYAN}[+] Wordlist      : {wordlist_path}")
-print(f"[{Fore.GREEN}+{Style.RESET_ALL}] Scanning for directories...\n")
+print(f"{Fore.CYAN}[+] Wordlist      : {wordlist_path}\n")
+
+print(f"{Fore.GREEN}[+]{Style.RESET_ALL} Scanning for directories...\n")
 
 if not os.path.isfile(wordlist_path):
-    print(f"[{Fore.RED}+{Style.RESET_ALL}] Wordlist not found: {wordlist_path}")
+    print(f"{Fore.RED}[+]{Style.RESET_ALL} Wordlist not found: {wordlist_path}")
     sys.exit(1)
 
 try:
     requests.get(host, timeout=TIMEOUT)
 except Exception as e:
-    print(f"[{Fore.RED}+{Style.RESET_ALL}] Target unreachable: {e}")
+    print(f"{Fore.RED}[+]{Style.RESET_ALL} Target unreachable: {e}")
     sys.exit(0)
 
 q = queue.Queue()
@@ -88,4 +89,4 @@ for i in range(threads):
     t.start()
 
 q.join()
-print(f"\n[{Fore.GREEN}+{Style.RESET_ALL}] Scan completed.")
+print(f"\n{Fore.GREEN}[+]{Style.RESET_ALL} Scan completed.")
